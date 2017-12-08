@@ -52,6 +52,7 @@ public class SwipeTrail : MonoBehaviour {
     private float xmouse;
     private float ymouse;
 
+    /*
     void Start()
     {
         sourceManager = GameObject.Find("SourceManager");
@@ -101,7 +102,7 @@ public class SwipeTrail : MonoBehaviour {
         int rand = Random.Range(0,2);
         letter = randLetters[rand];
 
-        /** init sprites for direction calculation */
+        //init sprites for direction calculation
         green = GameObject.Find("Draw_green");
         if (green == null)
             Debug.LogError("Careful! No Draw_green Object");
@@ -268,4 +269,5 @@ public class SwipeTrail : MonoBehaviour {
     {
         yield return new WaitForSeconds(5);
     }
+    */
 }

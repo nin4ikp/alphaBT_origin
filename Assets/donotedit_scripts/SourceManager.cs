@@ -1,36 +1,31 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.SceneManagement;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 using System;
 using System.IO;
 
-public class SourceManager : MonoBehaviour {
-
+public class SourceManager : MonoBehaviour
+{
     private string path;
     private string filePath;
     private string filePath2;
-    /** directories */
-
-    /** main Music like background */
     private string mainMusicDir;
-    /** content audio files like letters, syllables, words*/
     private string musicContentDir;
-
-    /** sprites: images for the words */
     private string spritesDir;
-    /** text files: every csv (list of contents) */
     private string textDir;
-
-    /** videos (for later video output like mouth) */
     private string videoDir;
 
     private string wrongSoundDir;
     private string rightSoundDir;
 
-    /** change letter on */
     private string letter;
-
+    private string levelsFile = "LevelsToLoad.csv";
     private string[] listOfCounterletters;
+    private string[] listOfLevelPaths;
     private int actualCounterletterPos = 0;
     private string posLetter;
     private string negLetter;
@@ -38,6 +33,85 @@ public class SourceManager : MonoBehaviour {
 
     private void Awake()
     {
+        Debug.Log("SourceManager active.");
+        /*
+        path = GetPath();
+        Debug.Log(path);
+        listOfLevelPaths = GetLevels(path);
+#if UNITY_EDITOR
+        Debug.Log("In UNITY_EDITOR");
+        CustomizedBuild(listOfLevelPaths);
+#endif
+        */
+        DontDestroyOnLoad(transform.gameObject);
+    }
+    /*
+    private string GetPath()
+    {
+        return Path.GetFullPath(Application.dataPath);
+    }
+
+    private string[] GetLevels(string path)
+    {
+        if (Directory.Exists(path))
+        {
+            string levelsInText = File.ReadAllText(path + "/" + levelsFile );
+            if (File.Exists("Assets/" + levelsFile))
+            {
+                string[] levelsInArray = levelsInText.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+                return levelsInArray;
+            }
+            else
+            {
+                Debug.LogError("Could not get file for levels. Check if file 'LevelsToLoad.csv' exists.");
+                return null;
+            }
+        }
+        else
+        {
+            Debug.LogError("Could not get path for levels. Check path for file 'LevelsToLoad.csv'.");
+            return null;
+        }
+    }
+#if UNITY_EDITOR
+    public static void CustomizedBuild(string[] levels)
+    {
+        Debug.Log("starting Customized Build...");
+        BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions()
+        {
+            scenes = new[] {"donotedit_scenes/Main.unity"},
+            locationPathName = "AndroidBuild",
+            target = BuildTarget.Android,
+            options = BuildOptions.None
+        };
+        BuildPipeline.BuildPlayer(buildPlayerOptions);
+
+        Debug.Log("Customized Build performed.");
+    }
+#endif
+
+    */
+    private void ChangeToScene(int number)
+    {
+        if (number < SceneManager.sceneCountInBuildSettings)
+        {
+            if (SceneManager.GetActiveScene() != SceneManager.GetSceneByBuildIndex(number))
+                SceneManager.LoadScene(number);
+            else
+                Debug.LogError("Scene already active.");
+        }
+        else
+        {
+            Debug.LogError("Scenenumber is not within the Build Settings.");
+        }
+    }
+
+}
+    /*
+    private void Awake()
+    {
+
+
         MakePath();
         SetRightWrongSounds();
 
@@ -155,3 +229,4 @@ public class SourceManager : MonoBehaviour {
     public string GetMusicContentDir() { return musicContentDir; }  // Debug.Log(musicContentDir);
     public string GetTextDir() { return textDir; }  // Debug.Log(textDir);
 }
+*/

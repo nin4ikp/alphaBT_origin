@@ -37,6 +37,7 @@ public class Question : MonoBehaviour {
     private GameObject sourceManager;
     private int nextSceneIndex;
 
+    /*
     private void Awake()
     {
         sourceManager = GameObject.Find("SourceManager");
@@ -336,4 +337,5 @@ public class Question : MonoBehaviour {
         Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 1000, Color.white);
         return null;
     }
+    */
 }

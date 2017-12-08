@@ -31,6 +31,7 @@ public class ReadAndDragFiles : MonoBehaviour {
     private int totalScore;
     private LayerMask lmask = 1 << 8;// Tiles
 
+    /*
     void Start() {
         sourceManager = GameObject.Find("SourceManager");
         if (sourceManager == null)
@@ -47,13 +48,13 @@ public class ReadAndDragFiles : MonoBehaviour {
         posletter = sourceManager.GetComponent<SourceManager>().GetPosLetter();
         negletter = sourceManager.GetComponent<SourceManager>().GetNegLetter();
 
-        /** initialise all Tiles, which are named in the .csv-file */
+        // initialise all Tiles, which are named in the .csv-file
         postiles = InitTiles(posletter);
         negtiles = InitTiles(negletter);
         totalScore = postiles.Length + negtiles.Length;
-        /** main Plane for getting the raycasts */
+        // main Plane for getting the raycasts
         objPlane = new Plane(Camera.main.transform.forward * -1, this.transform.position);
-        /** get the baskets for score-calculation and final check, if all tiles are in the baskets*/
+        // get the baskets for score-calculation and final check, if all tiles are in the baskets
         bask1 = GameObject.Find("Basket");
         bask2 = GameObject.Find("Basket2");
 
@@ -63,9 +64,9 @@ public class ReadAndDragFiles : MonoBehaviour {
 
     void Update()
     {
-        /** when a tile is touched/clicked on it shall play the corresponding sound and
-         *  save the position in the distance variable. Dragging is set to true, so the 
-         *  the position of the Tile can be transformed equally to the actual mouse position. */
+        // when a tile is touched/clicked on it shall play the corresponding sound and 
+        save the position in the distance variable. Dragging is set to true, so the 
+        the position of the Tile can be transformed equally to the actual mouse position.
         if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
             || (Input.GetMouseButtonDown(0)))
         {
@@ -82,7 +83,7 @@ public class ReadAndDragFiles : MonoBehaviour {
         else if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended) || (Input.GetMouseButtonUp(0)))
         {
             dragging = false;
-            /** check if all Tiles are in a basket */
+            //check if all Tiles are in a basket
             if (bask1.GetComponent<Basket>().getNumberofRight() + bask1.GetComponent<Basket>().getNumberofWrong()
                 + bask2.GetComponent<Basket>().getNumberofRight() + bask2.GetComponent<Basket>().getNumberofWrong() == postiles.Length + negtiles.Length)
             {
@@ -98,7 +99,7 @@ public class ReadAndDragFiles : MonoBehaviour {
                 SceneManager.LoadScene(nextSceneIndex);
             }
         }
-        /** Transform equally to the mouse position */
+        //Transform equally to the mouse position
         if (dragging)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -139,15 +140,15 @@ public class ReadAndDragFiles : MonoBehaviour {
 
     GameObject GetClickedGameObject()
     {
-        /** Builds a ray from camera point of view to the mouse position */
+        //Builds a ray from camera point of view to the mouse position
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
-        /** Casts the ray and get the first game object hit */
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity,lmask.value))  //
+        //Casts the ray and get the first game object hit
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity,lmask.value))
         {
-            /** draw ray from behind in the 3D view to check for collision; yellow = hit */
+            //draw ray from behind in the 3D view to check for collision; yellow = hit
             Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
-            /** take only those with the tag "Tiles" */
+            //take only those with the tag "Tiles"
             Debug.Log(hit.collider.gameObject.tag);
             
             if (hit.collider.gameObject.tag == "Tiles")
@@ -156,8 +157,8 @@ public class ReadAndDragFiles : MonoBehaviour {
                     return hit.transform.gameObject;
             }
         }
-        /** draw ray from behind in the 3D view to check for collision, white = no hit */
+        //draw ray from behind in the 3D view to check for collision, white = no hit
         Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 1000, Color.white);
         return null;
-    }
+    }*/
 }
