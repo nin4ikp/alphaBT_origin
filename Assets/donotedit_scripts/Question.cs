@@ -17,13 +17,12 @@ public class Question : MonoBehaviour {
 
     private string posletter;
     private string negletter;
+    private string workingDir;
     private AudioClip rightAnswerClip;
     private AudioClip wrongAnswerClip;
 
-    private string[] posList;
-    private string[] negList;
-    private List<string> wrongPosList;
-    private List<string> wrongNegList;
+    private List<string> posList;
+    private List<string> negList;
     private List<string> rightList;
     private float distance;
     private int randletter;
@@ -36,8 +35,7 @@ public class Question : MonoBehaviour {
 
     private GameObject sourceManager;
     private int nextSceneIndex;
-
-    /*
+    
     private void Awake()
     {
         sourceManager = GameObject.Find("SourceManager");
@@ -45,23 +43,14 @@ public class Question : MonoBehaviour {
         {
             Debug.LogError("Careful! No SourceManager!");
         }
+        
         nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
-        //Debug.Log("ANZAHL SCENES!: " + SceneManager.sceneCountInBuildSettings);
         if (nextSceneIndex >= SceneManager.sceneCountInBuildSettings)
         {
             nextSceneIndex = 0;
         }
-        posletter = sourceManager.GetComponent<SourceManager>().GetPosLetter();
-        negletter = sourceManager.GetComponent<SourceManager>().GetNegLetter();
-
-        //StartCoroutine(LoadSoundFromFile("right"));
-        rightAnswerClip = Resources.Load<AudioClip>(sourceManager.GetComponent<SourceManager>().GetRightSoundDir());
-        //Debug.Log(rightAnswerClip.name);
-        wrongAnswerClip = Resources.Load<AudioClip>(sourceManager.GetComponent<SourceManager>().GetWrongSoundDir());
-        //Debug.Log(wrongAnswerClip.name);
-
-        wrongPosList = new List<string>();
-        wrongNegList = new List<string>();
+        posList = new List<string>();
+        negList = new List<string>();
     }
 
     IEnumerator LoadSoundFromFile(string filename)
@@ -72,23 +61,37 @@ public class Question : MonoBehaviour {
         rightAnswerClip = www.GetAudioClip();
         yield return new WaitForSeconds(5);
     }
-
+    
     private void Start()
     {
-        posList = InitList(posletter, true);    // sets also the wrongPosList
-        negList = InitList(negletter, false);   // sets also the wrongNegList
+        posletter = sourceManager.GetComponent<SourceManager>().GetPosLetter();
+        negletter = sourceManager.GetComponent<SourceManager>().GetNegLetter();
+        workingDir = sourceManager.GetComponent<SourceManager>().GetDirectory();
+        rightAnswerClip = Resources.Load<AudioClip>(sourceManager.GetComponent<SourceManager>().GetRightSoundDir());
+        wrongAnswerClip = Resources.Load<AudioClip>(sourceManager.GetComponent<SourceManager>().GetWrongSoundDir());
+
+#if false
+        Debug.Log(posletter);
+        Debug.Log(negletter);
+        Debug.Log(workingDir);
+        Debug.Log(rightAnswerClip.name);
+        Debug.Log(wrongAnswerClip.name);
+#endif
+
+        InitList(posletter, true);    // sets the posList
+        InitList(negletter, false);   // sets the negList
 
         randletter = 0;
         randsyl = 0;
         setTilesNow = false;
 
         SetGameObj(PosTile, posletter, posletter);
-        SetGameObj(QuestionTile, wrongPosList[randsyl], posletter);
+        SetGameObj(QuestionTile, posList[randsyl], posletter);
         SetAnswers(TrueTile, true);
         SetAnswers(FalseTile, false);
         rightList = new List<string>();
     }
-
+    
     private void Update()
     {
         if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || (Input.GetMouseButtonDown(0)))
@@ -109,16 +112,16 @@ public class Question : MonoBehaviour {
                         if (randsyl < 0.5)
                         {
                             Debug.Log("correct answer");
-                            Debug.Log(wrongPosList[listIndex]);
-                            rightList.Add(wrongPosList[listIndex]);
-                            wrongPosList.Remove(wrongPosList[listIndex]);
+                            Debug.Log(posList[listIndex]);
+                            rightList.Add(posList[listIndex]);
+                            posList.Remove(posList[listIndex]);
                         }
                         else if (randsyl >= 0.5)
                         {
                             Debug.Log("correct answer");
-                            Debug.Log(wrongNegList[listIndex]);
-                            rightList.Add(wrongNegList[listIndex]);
-                            wrongNegList.Remove(wrongNegList[listIndex]);
+                            Debug.Log(negList[listIndex]);
+                            rightList.Add(negList[listIndex]);
+                            negList.Remove(negList[listIndex]);
                         }
                         setTilesNow = true;
                     }
@@ -151,39 +154,42 @@ public class Question : MonoBehaviour {
         yield return new WaitForSeconds(clipSource.clip.length);
     }
 
-    string[] InitList(string myletter, bool pos)
+    void InitList(string myletter, bool pos)
     {
-        sourceManager.GetComponent<SourceManager>().SetLetter(myletter);
+        //sourceManager.GetComponent<SourceManager>().SetLetter(myletter);
         if(syllable == true)
         {
             string[] newObj = new string[6];
-            for (int i = 0; i < vocals.Length; i++)
+            for (int i = 0; i < GetVocals().Length; i++)
             {
                 myletter = myletter.ToLower();
                 newObj[i] = myletter + vocals[i];
                 newObj[i + vocals.Length] = vocals[i] + myletter;
                 if (pos)
-                    wrongPosList.Add(newObj[i]);
+                    posList.Add(newObj[i]);
                 else
-                    wrongNegList.Add(newObj[i]);
+                    negList.Add(newObj[i]);
             }
-            return newObj;
         }
         else
         {
-            Debug.Log("readalltext from: " + sourceManager.GetComponent<SourceManager>().GetTextDir() + "_pos1.csv");
-            string text = System.IO.File.ReadAllText(sourceManager.GetComponent<SourceManager>().GetTextDir() + "_pos1.csv");
+            Debug.Log("readalltext from: " + workingDir + myletter + "_pos1.csv");
+            string text = System.IO.File.ReadAllText(workingDir + myletter + "_pos1.csv");
             string[] splittedText = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
             string[] newObj = new string[splittedText.Length - 1];
             for (int i = 0; i < splittedText.Length - 1; i++) {
                 newObj[i] = splittedText[i];
                 if (pos)
-                    wrongPosList.Add(newObj[i]);
+                    posList.Add(newObj[i]);
                 else
-                    wrongNegList.Add(newObj[i]);
+                    negList.Add(newObj[i]);
             }
-            return newObj;
         }
+    }
+
+    private string[] GetVocals()
+    {
+        return vocals;
     }
 
     void SetTilesAnew()
@@ -192,35 +198,35 @@ public class Question : MonoBehaviour {
         randsyl = UnityEngine.Random.Range(0, 2); // syllable with M (<0.5) or N
 
         // don't forget to set the right answer
-        if (randletter < 0.5 && (wrongPosList.Count != 0 || wrongNegList.Count != 0))
+        if (randletter < 0.5 && (posList.Count != 0 || negList.Count != 0))
         {
             Debug.Log("inside posletter");
             SetGameObj(PosTile, posletter, posletter);  // M
             Debug.Log("inside posletter2");
-            if (randsyl < 0.5 && wrongPosList.Count != 0) // M
+            if (randsyl < 0.5 && posList.Count != 0) // M
             {
                 Debug.Log("same letter and syl M");
                 SetAnswers(TrueTile, true);
                 SetAnswers(FalseTile, false);
-                listIndex = UnityEngine.Random.Range(0, wrongPosList.Count);
-                SetGameObj(QuestionTile, wrongPosList[listIndex], posletter);
+                listIndex = UnityEngine.Random.Range(0, posList.Count);
+                SetGameObj(QuestionTile, posList[listIndex], posletter);
             }
-            else if (randsyl >= 0.5 && wrongNegList.Count != 0)  // N
+            else if (randsyl >= 0.5 && negList.Count != 0)  // N
             {
                 Debug.Log("Letter M, Question N");
                 SetAnswers(TrueTile, false);
                 SetAnswers(FalseTile, true);
-                listIndex = UnityEngine.Random.Range(0, wrongNegList.Count);
-                SetGameObj(QuestionTile, wrongNegList[listIndex], negletter);
+                listIndex = UnityEngine.Random.Range(0, negList.Count);
+                SetGameObj(QuestionTile, negList[listIndex], negletter);
             }
-            else if (wrongPosList.Count != 0)
+            else if (posList.Count != 0)
             {
                 randsyl = 0;
                 Debug.Log("same letter and syl M");
                 SetAnswers(TrueTile, true);
                 SetAnswers(FalseTile, false);
-                listIndex = UnityEngine.Random.Range(0, wrongPosList.Count);
-                SetGameObj(QuestionTile, wrongPosList[listIndex], posletter);
+                listIndex = UnityEngine.Random.Range(0, posList.Count);
+                SetGameObj(QuestionTile, posList[listIndex], posletter);
             }
             else
             {
@@ -228,40 +234,40 @@ public class Question : MonoBehaviour {
                 Debug.Log("Letter M, Question N");
                 SetAnswers(TrueTile, false);
                 SetAnswers(FalseTile, true);
-                listIndex = UnityEngine.Random.Range(0, wrongNegList.Count);
-                SetGameObj(QuestionTile, wrongNegList[listIndex], negletter);
+                listIndex = UnityEngine.Random.Range(0, negList.Count);
+                SetGameObj(QuestionTile, negList[listIndex], negletter);
             }
         }
-        else if (randletter >= 0.5 && (wrongPosList.Count != 0 || wrongNegList.Count != 0))
+        else if (randletter >= 0.5 && (posList.Count != 0 || negList.Count != 0))
         {
             Debug.Log("inside negletter");
             // negletter
             SetGameObj(PosTile, negletter, negletter); // N
             Debug.Log("inside negletter2");
-            if (randsyl < 0.5 && wrongPosList.Count != 0) // M
+            if (randsyl < 0.5 && posList.Count != 0) // M
             {
                 Debug.Log("Letter N, Question M");
                 SetAnswers(TrueTile, false);
                 SetAnswers(FalseTile, true);
-                listIndex = UnityEngine.Random.Range(0, wrongPosList.Count);
-                SetGameObj(QuestionTile, wrongPosList[listIndex], posletter);
+                listIndex = UnityEngine.Random.Range(0, posList.Count);
+                SetGameObj(QuestionTile, posList[listIndex], posletter);
             }
-            else if (randsyl >= 0.5 && wrongNegList.Count != 0) // N
+            else if (randsyl >= 0.5 && negList.Count != 0) // N
             {
                 Debug.Log("same letter and syl N");
                 SetAnswers(TrueTile, true);
                 SetAnswers(FalseTile, false);
-                listIndex = UnityEngine.Random.Range(0, wrongNegList.Count);
-                SetGameObj(QuestionTile, wrongNegList[listIndex], negletter);
+                listIndex = UnityEngine.Random.Range(0, negList.Count);
+                SetGameObj(QuestionTile, negList[listIndex], negletter);
             }
-            else if (wrongPosList.Count != 0)
+            else if (posList.Count != 0)
             {
                 randsyl = 0;
                 Debug.Log("Letter N, Question M");
                 SetAnswers(TrueTile, false);
                 SetAnswers(FalseTile, true);
-                listIndex = UnityEngine.Random.Range(0, wrongPosList.Count);
-                SetGameObj(QuestionTile, wrongPosList[listIndex], posletter);
+                listIndex = UnityEngine.Random.Range(0, posList.Count);
+                SetGameObj(QuestionTile, posList[listIndex], posletter);
             }
             else
             {
@@ -269,38 +275,38 @@ public class Question : MonoBehaviour {
                 Debug.Log("same letter and syl N");
                 SetAnswers(TrueTile, true);
                 SetAnswers(FalseTile, false);
-                listIndex = UnityEngine.Random.Range(0, wrongNegList.Count);
-                SetGameObj(QuestionTile, wrongNegList[listIndex], negletter);
+                listIndex = UnityEngine.Random.Range(0, negList.Count);
+                SetGameObj(QuestionTile, negList[listIndex], negletter);
             }
         }
         else
         {
             Debug.Log("ALL ANSWERS DONE!");
             if (nextSceneIndex == 0)
-                sourceManager.GetComponent<SourceManager>().GoToNextCounterletterPair();
+                //sourceManager.GetComponent<SourceManager>().GoToNextCounterletterPair();
             SceneManager.LoadScene(nextSceneIndex);
         }
     }
 
     void SetGameObj(GameObject obj, string myletter, string realLetter)
     {
-        sourceManager.GetComponent<SourceManager>().SetLetter(realLetter);
+        //sourceManager.GetComponent<SourceManager>().SetLetter(realLetter);
         if (syllable == true)
         {
             if (myletter.Length > 1)
-                obj.gameObject.GetComponent<AudioSource>().clip = Resources.Load<AudioClip>(sourceManager.GetComponent<SourceManager>().GetMusicContentDir() + "_syl/" + myletter);
+                obj.gameObject.GetComponent<AudioSource>().clip = Resources.Load<AudioClip>(workingDir + myletter);
             else
-                obj.gameObject.GetComponent<AudioSource>().clip = Resources.Load<AudioClip>(sourceManager.GetComponent<SourceManager>().GetMusicContentDir());
+                obj.gameObject.GetComponent<AudioSource>().clip = Resources.Load<AudioClip>(workingDir);
         }
         else
         {
             if (myletter.Length > 1)
             {
-                obj.gameObject.GetComponent<AudioSource>().clip = Resources.Load<AudioClip>(sourceManager.GetComponent<SourceManager>().GetMusicContentDir()+ "_pos1/" + myletter);
-                obj.gameObject.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(sourceManager.GetComponent<SourceManager>().GetSpritesDir() + "_pos1/" + myletter);
+                obj.gameObject.GetComponent<AudioSource>().clip = Resources.Load<AudioClip>(workingDir + myletter + "_pos1");
+                obj.gameObject.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(workingDir + myletter + "_pos1");
             }
             else
-                obj.gameObject.GetComponent<AudioSource>().clip = Resources.Load<AudioClip>(sourceManager.GetComponent<SourceManager>().GetMusicContentDir());
+                obj.gameObject.GetComponent<AudioSource>().clip = Resources.Load<AudioClip>(workingDir);
         }
     }
 
@@ -337,5 +343,4 @@ public class Question : MonoBehaviour {
         Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 1000, Color.white);
         return null;
     }
-    */
 }

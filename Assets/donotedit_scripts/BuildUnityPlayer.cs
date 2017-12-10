@@ -16,33 +16,35 @@ public class BuildUnityPlayer : MonoBehaviour
         Debug.Log(path);
         string[] listOfLevelPaths = GetLevels(path);
 
+        
         BuildPlayerOptions resetBuildPlayerOptions = new BuildPlayerOptions()
         {
             scenes = {},
-            locationPathName = Application.dataPath,
+            locationPathName = "alphaBT.apk",
             target = BuildTarget.Android,
             options = BuildOptions.None
         };
         BuildPipeline.BuildPlayer(resetBuildPlayerOptions);
-
-        EditorBuildSettingsScene[] original = new EditorBuildSettingsScene[0];
+        
+        var original = new EditorBuildSettingsScene[0];
         EditorBuildSettings.scenes = original;
 
         foreach (var scenePath in listOfLevelPaths)
         {
             original = EditorBuildSettings.scenes;
-            EditorBuildSettingsScene[] newSettings = new EditorBuildSettingsScene[original.Length + 1];
+            var newSettings = new EditorBuildSettingsScene[original.Length + 1];
             Array.Copy(original, newSettings, original.Length);
             var sceneToAdd = new EditorBuildSettingsScene(scenePath, true);
             newSettings[newSettings.Length - 1] = sceneToAdd;
             EditorBuildSettings.scenes = newSettings;
         }
-
+        
         Debug.Log("starting Customized Build...");
+        
         BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions()
         {
             scenes = listOfLevelPaths,
-            locationPathName = Application.dataPath,
+            locationPathName = "alphaBT.apk",
             target = BuildTarget.Android,
             options = BuildOptions.None
         };
