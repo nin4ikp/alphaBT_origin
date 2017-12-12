@@ -18,6 +18,7 @@ public class Question : MonoBehaviour {
     private string posletter;
     private string negletter;
     private string workingDir;
+    private string fileDir;
     private AudioClip rightAnswerClip;
     private AudioClip wrongAnswerClip;
 
@@ -67,6 +68,7 @@ public class Question : MonoBehaviour {
         posletter = sourceManager.GetComponent<SourceManager>().GetPosLetter();
         negletter = sourceManager.GetComponent<SourceManager>().GetNegLetter();
         workingDir = sourceManager.GetComponent<SourceManager>().GetDirectory();
+        fileDir = sourceManager.GetComponent<SourceManager>().GetFileDirectory();
         rightAnswerClip = Resources.Load<AudioClip>(sourceManager.GetComponent<SourceManager>().GetRightSoundDir());
         wrongAnswerClip = Resources.Load<AudioClip>(sourceManager.GetComponent<SourceManager>().GetWrongSoundDir());
 
@@ -96,9 +98,12 @@ public class Question : MonoBehaviour {
     {
         if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || (Input.GetMouseButtonDown(0)))
         {
+            Debug.Log("got input.");
             thisObject = GetClickedGameObject();
+            Debug.Log(thisObject.name);
             if (thisObject != null)
             {
+                Debug.Log("gameobj not null!");
                 if (thisObject.tag == "RightWrong" && setTilesNow == false)
                 {
                     aud = thisObject.gameObject.GetComponent<AudioSource>();
@@ -133,6 +138,7 @@ public class Question : MonoBehaviour {
                 }
                 else
                 {
+                    Debug.Log("got in here: " +thisObject.gameObject.GetComponent<AudioSource>().name );
                     thisObject.gameObject.GetComponent<AudioSource>().Play();
                 }
             }
@@ -294,9 +300,18 @@ public class Question : MonoBehaviour {
         if (syllable == true)
         {
             if (myletter.Length > 1)
-                obj.gameObject.GetComponent<AudioSource>().clip = Resources.Load<AudioClip>(workingDir + myletter);
+            {
+                Debug.Log(fileDir + myletter);
+                obj.gameObject.GetComponent<AudioSource>().clip = Resources.Load<AudioClip>(fileDir + myletter);
+                obj.gameObject.GetComponent<Renderer>().material.color = UnityEngine.Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
+
+            }
             else
-                obj.gameObject.GetComponent<AudioSource>().clip = Resources.Load<AudioClip>(workingDir);
+            {
+                Debug.Log(fileDir+ realLetter);
+                obj.gameObject.GetComponent<AudioSource>().clip = Resources.Load<AudioClip>(fileDir + realLetter);
+                obj.gameObject.GetComponent<Renderer>().material.color = UnityEngine.Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
+            }
         }
         else
         {
@@ -316,12 +331,12 @@ public class Question : MonoBehaviour {
         if (trueorfalse == true)
         {
             obj.gameObject.GetComponent<AudioSource>().clip = rightAnswerClip;
-            Debug.Log(obj.GetComponent<AudioSource>().clip.name);
+            Debug.Log(obj.gameObject.name + " Audioclip set: " + obj.GetComponent<AudioSource>().clip.name);
         }
         else if (trueorfalse == false)
         {
             obj.gameObject.GetComponent<AudioSource>().clip = wrongAnswerClip;
-            Debug.Log(obj.GetComponent<AudioSource>().clip.name);
+            Debug.Log(obj.gameObject.name + " Audioclip set: " + obj.GetComponent<AudioSource>().clip.name);
         }
     }
 
@@ -337,6 +352,7 @@ public class Question : MonoBehaviour {
             // take only those with the tag "Tiles"
             if (hit.collider.gameObject.tag == "Tiles" || hit.collider.gameObject.tag == "RightWrong")
             {
+                Debug.Log("got gameobject " + hit.collider.gameObject.tag);
                 return hit.transform.gameObject;
             }
         }

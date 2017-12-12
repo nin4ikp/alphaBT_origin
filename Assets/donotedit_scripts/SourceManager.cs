@@ -12,7 +12,6 @@ public class SourceManager : MonoBehaviour
 {
     private string path;
     private string filePath;
-    private string filePath2;
     private string mainMusicDir;
     private string musicContentDir;
     private string spritesDir;
@@ -36,6 +35,7 @@ public class SourceManager : MonoBehaviour
         Debug.Log("SourceManager active.");
 
         path = GetPath();
+        filePath = GetFilePath(path);
         SetRightWrongSounds();
         GetLettersFromFile(out posLetter, out negLetter);
         letter = posLetter;
@@ -50,6 +50,13 @@ public class SourceManager : MonoBehaviour
         Debug.Log("Getting path...");
         return SceneManager.GetActiveScene().path.Remove(SceneManager.GetActiveScene().path.LastIndexOf('/') + 1);
     }
+
+    private string GetFilePath(string path)
+    {
+        Debug.Log("Getting filePath...");
+        return path.Replace("Assets/Resources/", "");
+    }
+
 
     public void SetRightWrongSounds()
     {
@@ -136,7 +143,8 @@ public class SourceManager : MonoBehaviour
     public string GetPosLetter() { return posLetter; }
     public string GetNegLetter() { return negLetter; }
     public string GetDirectory() { return path; }
+    public string GetFileDirectory() { return filePath; }
 
-    public string GetWrongSoundDir() { return wrongSoundDir; Debug.Log(wrongSoundDir); }
-    public string GetRightSoundDir() { return rightSoundDir; Debug.Log(rightSoundDir); }
+    public string GetWrongSoundDir() { return wrongSoundDir; }  //Debug.Log(wrongSoundDir); 
+    public string GetRightSoundDir() { return rightSoundDir; }  // Debug.Log(rightSoundDir); }
 }
