@@ -39,7 +39,7 @@ public class SwipeTrail : MonoBehaviour {
 
     /** check for input for a certain timeamount */
     private float nexttimeout = 0;
-    private float nexttimeoutinsec = 3;
+    private float nexttimeoutinsec = 4;
 
     private float bminx;
     private float bminy;
@@ -52,7 +52,9 @@ public class SwipeTrail : MonoBehaviour {
     private float xmouse;
     private float ymouse;
 
-    /*
+    private string workingDir;
+    private string fileDir;
+    
     void Start()
     {
         sourceManager = GameObject.Find("SourceManager");
@@ -60,18 +62,22 @@ public class SwipeTrail : MonoBehaviour {
         {
             Debug.LogError("Careful! No SourceManager!");
         }
+
         nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
-        Debug.Log("SANZAHL SCENES!: " + SceneManager.sceneCountInBuildSettings);
         if (nextSceneIndex >= SceneManager.sceneCountInBuildSettings)
         {
             nextSceneIndex = 0;
         }
+
         soundManager = GameObject.Find("SoundManager");
         if (soundManager == null)
         {
             Debug.LogError("Careful! No SoundManager!");
         }
+
         soundManager.GetComponent<SoundManager>().singleSoundSource.clip = Resources.Load<AudioClip>(sourceManager.GetComponent<SourceManager>().GetWrongSoundDir());
+        workingDir = sourceManager.GetComponent<SourceManager>().GetDirectory();
+        fileDir = sourceManager.GetComponent<SourceManager>().GetFileDirectory();
 
         InitBase();
         InitLetterBased();
@@ -79,7 +85,6 @@ public class SwipeTrail : MonoBehaviour {
 
     void InitBase()
     {
-        
         objPlane = new Plane(Camera.main.transform.forward * -1, this.transform.position);
 
         drawBaseColl = drawBase.GetComponent<BoxCollider2D>();
@@ -129,11 +134,11 @@ public class SwipeTrail : MonoBehaviour {
     {
         if (obj != null)
         {
-            sourceManager.GetComponent<SourceManager>().SetLetter(letter);
-            obj.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(sourceManager.GetComponent<SourceManager>().GetSpritesDir() + "_" +  greenorblack);
+            //sourceManager.GetComponent<SourceManager>().SetLetter(letter);
+            obj.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(fileDir + letter + greenorblack);
             if (setAudio)
             {
-                obj.GetComponent<AudioSource>().clip = Resources.Load<AudioClip>(sourceManager.GetComponent<SourceManager>().GetMusicContentDir());
+                obj.GetComponent<AudioSource>().clip = Resources.Load<AudioClip>(fileDir + letter);
                 letterSound = obj.GetComponent<AudioSource>();
             }
         }
@@ -223,14 +228,12 @@ public class SwipeTrail : MonoBehaviour {
         {
             if (CheckGColor())
             {
-                Debug.Log("YEAAAA!!");
-                letterSound.Play();
+                StartCoroutine(PlaySound());
                 goodanswers += 1;
                 if (goodanswers >= loadSceneAfterNumberofGood)
                 {
-                    if (nextSceneIndex == 0)
-                        sourceManager.GetComponent<SourceManager>().GoToNextCounterletterPair();
-                    SceneManager.LoadScene(nextSceneIndex);
+                    Debug.Log("nextSceneIndex" + nextSceneIndex);
+                    sourceManager.GetComponent<SourceManager>().ChangeToScene(nextSceneIndex);
                 }
                 Reset();
             }
@@ -257,17 +260,15 @@ public class SwipeTrail : MonoBehaviour {
 
     private void Reset()
     {
-        StartCoroutine(Waiting());
         GameObject[] toClean = GameObject.FindGameObjectsWithTag("Trail");
         foreach (GameObject obj in toClean)
             Destroy(obj);
-        StartCoroutine(Waiting());
         InitLetterBased();
     }
 
-    private IEnumerator Waiting()
+    IEnumerator PlaySound()
     {
-        yield return new WaitForSeconds(5);
+        letterSound.Play();
+        yield return new WaitWhile( () => letterSound.isPlaying ); 
     }
-    */
 }

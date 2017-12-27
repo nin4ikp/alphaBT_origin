@@ -12,11 +12,6 @@ public class SourceManager : MonoBehaviour
 {
     private string path;
     private string filePath;
-    private string mainMusicDir;
-    private string musicContentDir;
-    private string spritesDir;
-    private string textDir;
-    private string videoDir;
 
     private string wrongSoundDir;
     private string rightSoundDir;
@@ -24,24 +19,30 @@ public class SourceManager : MonoBehaviour
     private string letter;
     private string levelsFile = "LevelsToLoad.csv";
     private string[] listOfCounterletters;
-    private string[] listOfLevelPaths;
-    private int actualCounterletterPos = 0;
+    private string[] words_pos;
+    private string[] words_neg;
     private string posLetter;
     private string negLetter;
     private string text;
+    private string text2;
 
     private void Awake()
     {
         Debug.Log("SourceManager active.");
 
         path = GetPath();
-        filePath = GetFilePath(path);
-        SetRightWrongSounds();
-        GetLettersFromFile(out posLetter, out negLetter);
-        letter = posLetter;
-
-        //InitLetterSpec();
-        DontDestroyOnLoad(transform.gameObject);
+        if (SceneManager.GetActiveScene().buildIndex != 0)
+        {
+            filePath = GetFilePath(path);
+            GetLettersFromFile(out posLetter, out negLetter);
+            letter = posLetter;
+            if (SceneManager.GetActiveScene().name == "Words")
+            {
+                GetWordsFromFile(letter, out words_pos);
+                GetWordsFromFile(negLetter, out words_neg);
+            }
+            SetRightWrongSounds();
+        }
     }
 
     private string GetPath()
@@ -67,7 +68,7 @@ public class SourceManager : MonoBehaviour
         Debug.Log("rightSound set: " + rightSoundDir);
 #endif
 
-#if UNITY_ANDROID && !UNITY_EDITOR
+#if UNITY_ANDROID && !UNITY_EDITOR      // header
         wrongSoundDir = "jar:file://" + Application.streamingAssetsPath + "!/assets/wrong";
         rightSoundDir = "jar:file://" + Application.streamingAssetsPath + "!/assets/right";
 #endif
@@ -82,6 +83,7 @@ public class SourceManager : MonoBehaviour
             listOfCounterletters = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
             posL = listOfCounterletters[0];
             negL = listOfCounterletters[1];
+            Debug.Log("CHECK: " + posL + negL);
         }
         else
         {
@@ -89,7 +91,6 @@ public class SourceManager : MonoBehaviour
             posL = null;
             negL = null;
         }
-
 #endif
 
 #if UNITY_ANDROID && !UNITY_EDITOR
@@ -100,32 +101,21 @@ public class SourceManager : MonoBehaviour
 #endif
     }
 
-    /*
-    public void SetLetter(string let)
+    private void GetWordsFromFile(string letter, out string[] words)
     {
-        letter = let;
-        InitLetterSpec();
+        if (letter != null)
+        {
+            text = File.ReadAllText(path + letter + "_pos1.csv");
+            words = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+        }
+        else
+        {
+            Debug.LogError("Letter not set (yet). Cannot set words list.");
+            words = null;
+        }
     }
 
-    void InitLetterSpec()
-    {
-        Debug.Log("Initialising SourceManager...");
-#if UNITY_EDITOR
-        spritesDir = "Sprites/" + letter + "/" + letter;
-        Debug.Log("spritesDir" + spritesDir);
-        textDir = GetPath() + "/Text/" + letter + "/" + letter;
-        Debug.Log("textDir" + textDir);
-        musicContentDir = "MusicContent/" + letter + "/" + letter;
-        Debug.Log("musicContentDir" + musicContentDir);
-#endif
-#if UNITY_ANDROID && !UNITY_EDITOR
-        spritesDir = GetPath();
-        musicContentDir = GetPath();
-        textDir = GetPath();
-#endif
-    }
-
-    private void ChangeToScene(int number)
+    public void ChangeToScene(int number)
     {
         if (number < SceneManager.sceneCountInBuildSettings)
         {
@@ -138,10 +128,12 @@ public class SourceManager : MonoBehaviour
         {
             Debug.LogError("Scenenumber is not within the Build Settings.");
         }
-    }*/
+    }
 
     public string GetPosLetter() { return posLetter; }
     public string GetNegLetter() { return negLetter; }
+    public string[] GetPosWords() { return words_pos; }
+    public string[] GetNegWords() { return words_neg; }
     public string GetDirectory() { return path; }
     public string GetFileDirectory() { return filePath; }
 

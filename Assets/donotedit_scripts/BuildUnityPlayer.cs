@@ -11,19 +11,24 @@ public class BuildUnityPlayer : MonoBehaviour
 
     public static void PerformBuild()
     {
-        Debug.Log("BuildUnityPlayer active.");
+        Console.WriteLine("BuildUnityPlayer active.");
         string path = GetPath();
-        Debug.Log(path);
+        Console.WriteLine(path);
         string[] listOfLevelPaths = GetLevels(path);
 
         
         BuildPlayerOptions resetBuildPlayerOptions = new BuildPlayerOptions()
         {
             scenes = {},
-            locationPathName = "alphaBT.apk",
+            locationPathName = path,
             target = BuildTarget.Android,
             options = BuildOptions.None
-        };
+        };  //make
+        Console.WriteLine(resetBuildPlayerOptions.scenes);
+        Console.WriteLine(resetBuildPlayerOptions.scenes);
+        Console.WriteLine(resetBuildPlayerOptions.locationPathName );
+        Console.WriteLine(resetBuildPlayerOptions.target);
+        Console.WriteLine(resetBuildPlayerOptions.options.ToString());
         BuildPipeline.BuildPlayer(resetBuildPlayerOptions);
         
         var original = new EditorBuildSettingsScene[0];
@@ -38,19 +43,19 @@ public class BuildUnityPlayer : MonoBehaviour
             newSettings[newSettings.Length - 1] = sceneToAdd;
             EditorBuildSettings.scenes = newSettings;
         }
-        
-        Debug.Log("starting Customized Build...");
+
+        Console.WriteLine("starting Customized Build...");
         
         BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions()
         {
             scenes = listOfLevelPaths,
-            locationPathName = "alphaBT.apk",
+            locationPathName = path,
             target = BuildTarget.Android,
             options = BuildOptions.None
         };
         BuildPipeline.BuildPlayer(buildPlayerOptions);
-        
-        Debug.Log("Customized Build performed.");
+
+        Console.WriteLine("Customized Build performed.");
     }
 
     private static string GetPath()
