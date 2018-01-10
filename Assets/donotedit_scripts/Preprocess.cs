@@ -19,11 +19,13 @@ public class BM_AndroidBuildPrepartion : IPreprocessBuild
             FileInfo info = new FileInfo(file);
             Debug.Log(info.FullName);
         }*/
-        Directory.CreateDirectory("Assets/StreamingAssets/");
+        if (!Directory.Exists("Assets/StreamingAssets/"))
+            Directory.CreateDirectory("Assets/StreamingAssets/");
         string text = File.ReadAllText("Assets/all_paths.csv");
+
         string[] splittedText = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
 
-        for (int i = 0; i < splittedText.Length -1; i++)
+        for (int i = 0; i < splittedText.Length - 1; i++)
         {
             string[] fileEntries = Directory.GetFiles(splittedText[i], "*.*");
             using (StreamWriter sw = new StreamWriter("Assets/StreamingAssets/streamingdata.txt", true))
@@ -41,6 +43,6 @@ public class BM_AndroidBuildPrepartion : IPreprocessBuild
                 }
             }
         }
-    }
+        }
 }
 #endif

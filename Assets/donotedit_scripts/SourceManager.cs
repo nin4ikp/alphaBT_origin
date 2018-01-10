@@ -19,8 +19,8 @@ public class SourceManager : MonoBehaviour
     private string letter;
     private string levelsFile = "LevelsToLoad.csv";
     private string[] listOfCounterletters;
-    private string[] words_pos;
-    private string[] words_neg;
+    private string[] wordsOne;
+    private string[] wordsTwo;
     private string posLetter;
     private string negLetter;
     private string text;
@@ -38,8 +38,8 @@ public class SourceManager : MonoBehaviour
             letter = posLetter;
             if (SceneManager.GetActiveScene().name == "Words")
             {
-                GetWordsFromFile(letter, out words_pos);
-                GetWordsFromFile(negLetter, out words_neg);
+                GetWordsFromFile(letter, out wordsOne);
+                GetWordsFromFile(negLetter, out wordsTwo);
             }
             SetRightWrongSounds();
         }
@@ -61,22 +61,22 @@ public class SourceManager : MonoBehaviour
 
     public void SetRightWrongSounds()
     {
-#if UNITY_EDITOR
+    #if UNITY_EDITOR
         wrongSoundDir = "mainMusic/general/wrong";
         Debug.Log("wrongSound set: " + wrongSoundDir);
         rightSoundDir = "mainMusic/general/right";
         Debug.Log("rightSound set: " + rightSoundDir);
-#endif
+    #endif
 
-#if UNITY_ANDROID && !UNITY_EDITOR      // header
+    #if UNITY_ANDROID && !UNITY_EDITOR      // header
         wrongSoundDir = "jar:file://" + Application.streamingAssetsPath + "!/assets/wrong";
         rightSoundDir = "jar:file://" + Application.streamingAssetsPath + "!/assets/right";
-#endif
+    #endif
     }
 
     private void GetLettersFromFile(out string posL, out string negL)
     {
-#if UNITY_EDITOR
+    #if UNITY_EDITOR
         if (path != null)
         {
             text = File.ReadAllText(path + "letters.txt");
@@ -91,21 +91,21 @@ public class SourceManager : MonoBehaviour
             posL = null;
             negL = null;
         }
-#endif
+    #endif
 
-#if UNITY_ANDROID && !UNITY_EDITOR
+    #if UNITY_ANDROID && !UNITY_EDITOR
         text = File.ReadAllText(path + "letters.txt");
         listOfCounterletters = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
         posL = listOfCounterletters[0];
         negL = listOfCounterletters[1];
-#endif
+    #endif
     }
 
     private void GetWordsFromFile(string letter, out string[] words)
     {
         if (letter != null)
         {
-            text = File.ReadAllText(path + letter + "_pos1.csv");
+            text = File.ReadAllText(path + letter + ".csv");
             words = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
         }
         else
@@ -132,8 +132,8 @@ public class SourceManager : MonoBehaviour
 
     public string GetPosLetter() { return posLetter; }
     public string GetNegLetter() { return negLetter; }
-    public string[] GetPosWords() { return words_pos; }
-    public string[] GetNegWords() { return words_neg; }
+    public string[] GetWordsOne() { return wordsOne; }
+    public string[] GetWordsTwo() { return wordsTwo; }
     public string GetDirectory() { return path; }
     public string GetFileDirectory() { return filePath; }
 
