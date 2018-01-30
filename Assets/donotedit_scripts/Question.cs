@@ -66,8 +66,8 @@ public class Question : MonoBehaviour {
     
     private void Start()
     {
-        letterOne = sourceManager.GetComponent<SourceManager>().GetPosLetter();
-        letterTwo = sourceManager.GetComponent<SourceManager>().GetNegLetter();
+        letterOne = sourceManager.GetComponent<SourceManager>().GetLetterOne();
+        letterTwo = sourceManager.GetComponent<SourceManager>().GetLetterTwo();
         workingDir = sourceManager.GetComponent<SourceManager>().GetDirectory();
         fileDir = sourceManager.GetComponent<SourceManager>().GetFileDirectory();
         rightAnswerClip = Resources.Load<AudioClip>(sourceManager.GetComponent<SourceManager>().GetRightSoundDir());
@@ -223,8 +223,6 @@ public class Question : MonoBehaviour {
     {
         randomLetter = Random.Range(0, 2); // choose M (<0.5) or N
         randomSyllable = Random.Range(0, 2); // syllable with M (<0.5) or N
-        Debug.Log(randomLetter);
-        Debug.Log(randomSyllable);
 
         // don't forget to set the right answer
         if (randomLetter == 0 && (posList.Count != 0 || negList.Count != 0))

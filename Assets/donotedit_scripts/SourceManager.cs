@@ -21,8 +21,8 @@ public class SourceManager : MonoBehaviour
     private string[] listOfCounterletters;
     private string[] wordsOne;
     private string[] wordsTwo;
-    private string posLetter;
-    private string negLetter;
+    private string letterOne;
+    private string letterTwo;
     private string text;
     private string text2;
 
@@ -34,12 +34,12 @@ public class SourceManager : MonoBehaviour
         if (SceneManager.GetActiveScene().buildIndex != 0)
         {
             filePath = GetFilePath(path);
-            GetLettersFromFile(out posLetter, out negLetter);
-            letter = posLetter;
-            if (SceneManager.GetActiveScene().name == "Words")
+            GetLettersFromFile(out letterOne, out letterTwo);
+            letter = letterOne;
+            if (SceneManager.GetActiveScene().name == "Words" || SceneManager.GetActiveScene().name == "Container")
             {
                 GetWordsFromFile(letter, out wordsOne);
-                GetWordsFromFile(negLetter, out wordsTwo);
+                GetWordsFromFile(letterTwo, out wordsTwo);
             }
             SetRightWrongSounds();
         }
@@ -54,6 +54,7 @@ public class SourceManager : MonoBehaviour
 
     private string GetFilePath(string path)
     {
+        // Returns the filepath of the active scene (removes "Assets/Resources/" part)
         Debug.Log("Getting filePath...");
         return path.Replace("Assets/Resources/", "");
     }
@@ -61,29 +62,21 @@ public class SourceManager : MonoBehaviour
 
     public void SetRightWrongSounds()
     {
-    #if UNITY_EDITOR
+        // sets right and wrong sounds
         wrongSoundDir = "mainMusic/general/wrong";
-        Debug.Log("wrongSound set: " + wrongSoundDir);
         rightSoundDir = "mainMusic/general/right";
-        Debug.Log("rightSound set: " + rightSoundDir);
-    #endif
-
-    #if UNITY_ANDROID && !UNITY_EDITOR      // header
-        wrongSoundDir = "jar:file://" + Application.streamingAssetsPath + "!/assets/wrong";
-        rightSoundDir = "jar:file://" + Application.streamingAssetsPath + "!/assets/right";
-    #endif
     }
 
     private void GetLettersFromFile(out string posL, out string negL)
     {
-    #if UNITY_EDITOR
         if (path != null)
         {
-            text = File.ReadAllText(path + "letters.txt");
+            TextAsset txtAsset = (TextAsset)Resources.Load(filePath + "letters", typeof(TextAsset));
+            string text = txtAsset.text;
+            //text = File.ReadAllText(path + "letters.txt");
             listOfCounterletters = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
             posL = listOfCounterletters[0];
             negL = listOfCounterletters[1];
-            Debug.Log("CHECK: " + posL + negL);
         }
         else
         {
@@ -91,21 +84,15 @@ public class SourceManager : MonoBehaviour
             posL = null;
             negL = null;
         }
-    #endif
-
-    #if UNITY_ANDROID && !UNITY_EDITOR
-        text = File.ReadAllText(path + "letters.txt");
-        listOfCounterletters = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
-        posL = listOfCounterletters[0];
-        negL = listOfCounterletters[1];
-    #endif
     }
 
     private void GetWordsFromFile(string letter, out string[] words)
     {
         if (letter != null)
         {
-            text = File.ReadAllText(path + letter + ".csv");
+            TextAsset txtAsset = (TextAsset)Resources.Load(filePath + letter, typeof(TextAsset));
+            string text = txtAsset.text;
+            //text = File.ReadAllText(path + letter + ".csv");
             words = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
         }
         else
@@ -130,13 +117,13 @@ public class SourceManager : MonoBehaviour
         }
     }
 
-    public string GetPosLetter() { return posLetter; }
-    public string GetNegLetter() { return negLetter; }
+    public string GetLetterOne() { return letterOne; }
+    public string GetLetterTwo() { return letterTwo; }
     public string[] GetWordsOne() { return wordsOne; }
     public string[] GetWordsTwo() { return wordsTwo; }
     public string GetDirectory() { return path; }
     public string GetFileDirectory() { return filePath; }
 
-    public string GetWrongSoundDir() { return wrongSoundDir; }  //Debug.Log(wrongSoundDir); 
-    public string GetRightSoundDir() { return rightSoundDir; }  // Debug.Log(rightSoundDir); }
+    public string GetWrongSoundDir() { return wrongSoundDir; }
+    public string GetRightSoundDir() { return rightSoundDir; }
 }

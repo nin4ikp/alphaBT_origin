@@ -21,8 +21,7 @@ public class Basket : MonoBehaviour {
     {
         objPlane = new Plane(Camera.main.transform.forward * -1, this.transform.position);
     }
-
-    /*
+    
     private void Update()
     {
         if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || (Input.GetMouseButtonDown(0)))
@@ -30,8 +29,8 @@ public class Basket : MonoBehaviour {
             distance = Vector3.Distance(transform.position, Camera.main.transform.position);
             thisObject = GetClickedGameObject();
 
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            actualPos = ray.GetPoint(distance);
+            //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            //actualPos = ray.GetPoint(distance);
             if (thisObject != null)
             {
                 if (thisObject.GetComponent<AudioSource>() != null)
@@ -91,13 +90,6 @@ public class Basket : MonoBehaviour {
     {
         return nrwrongTiles;
     }
-    public void SetLetter(string let)
-    {
-        letter = let;
-        sourceManager.GetComponent<SourceManager>().SetLetter(letter);
-        this.GetComponent<AudioSource>().clip = Resources.Load<AudioClip>(sourceManager.GetComponent<SourceManager>().GetMusicContentDir());
-
-    }
 
     GameObject GetClickedGameObject()
     {
@@ -116,5 +108,4 @@ public class Basket : MonoBehaviour {
         Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 1000, Color.white);
         return null;
     }
-    */
 }
