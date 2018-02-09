@@ -1,12 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
-using System;
+using UnityEngine.UI;
 
 public class ReadAndDragFiles : MonoBehaviour {
 
     public GameObject tile;
+    private Slider experienceSlider;
+    private GameControl control;
     private GameObject sourceManager;
     private int nextSceneIndex;
 
@@ -35,18 +35,16 @@ public class ReadAndDragFiles : MonoBehaviour {
     
     void Start() {
         sourceManager = GameObject.Find("SourceManager");
-        if (sourceManager == null)
-        {
-            Debug.LogError("Careful! No SourceManager!");
-        }
         files_dir = sourceManager.GetComponent<SourceManager>().GetFileDirectory();
 
         nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
-
         if (nextSceneIndex >= SceneManager.sceneCountInBuildSettings)
         {
             nextSceneIndex = 0;
         }
+
+        experienceSlider = GameObject.Find("Experience_Slider").GetComponent<Slider>();
+        control = GameObject.Find("GameControl").GetComponent<GameControl>();
 
         letterOne = sourceManager.GetComponent<SourceManager>().GetLetterOne();
         letterTwo = sourceManager.GetComponent<SourceManager>().GetLetterTwo();
@@ -94,12 +92,17 @@ public class ReadAndDragFiles : MonoBehaviour {
         {
             dragging = false;
             //check if all Tiles are in a basket
+            // Show score. Later: decide whether this task has to be made again
+            // load next scene
             if (bask1.GetComponent<Basket>().getNumberofRight() + bask1.GetComponent<Basket>().getNumberofWrong()
                 + bask2.GetComponent<Basket>().getNumberofRight() + bask2.GetComponent<Basket>().getNumberofWrong() == postiles.Length + negtiles.Length)
             {
                 score = bask1.GetComponent<Basket>().getNumberofRight() + bask2.GetComponent<Basket>().getNumberofRight();
-                
+
+                experienceSlider.GetComponent<Slider>().value += 20;    // experienceSlider.GetComponent<Slider>().value
+                GameControl.control.experience = experienceSlider.value;
                 Debug.Log("DONE: "+ score + "of" + totalScore + ": " + (float)score / (float)totalScore);
+                GameControl.control.Save();
                 SceneManager.LoadScene(nextSceneIndex);
             }
         }
@@ -124,11 +127,9 @@ public class ReadAndDragFiles : MonoBehaviour {
         GameObject[] newObj = new GameObject[text.Length - 1];
         for (int i = 0; i < text.Length - 1; i++)
         {
-            Debug.Log(files_dir + text[i]);
             zVal = -20.0f + ((i + 2) / 20);
             clone = (GameObject)Instantiate(tile, new Vector3(UnityEngine.Random.Range(-180, 180), UnityEngine.Random.Range(-50, 50), zVal), Quaternion.identity);
             clone.gameObject.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(files_dir + text[i]);
-            Debug.Log(clone.gameObject.GetComponent<SpriteRenderer>().sprite.name);
             clone.gameObject.GetComponent<AudioSource>().clip = Resources.Load<AudioClip>(files_dir + text[i]);
             clone.gameObject.GetComponent<Dragable>().dragable = true;
             clone.gameObject.GetComponent<Dragable>().letter = myletter;
@@ -137,6 +138,11 @@ public class ReadAndDragFiles : MonoBehaviour {
         return newObj;
     }
 
+    /// <summary>
+    /// Returns the clicked gameobject or null, if the recieved touch did not touch
+    /// any desired gameobject.
+    /// </summary>
+    /// <returns></returns> gameobject with tag "Tile" or "RightWrong"
     GameObject GetClickedGameObject()
     {
         //Builds a ray from camera point of view to the mouse position

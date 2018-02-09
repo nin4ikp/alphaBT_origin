@@ -6,7 +6,6 @@ using UnityEditor;
 #endif
 
 using System;
-using System.IO;
 
 public class SourceManager : MonoBehaviour
 {

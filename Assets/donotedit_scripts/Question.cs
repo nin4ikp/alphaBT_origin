@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEngine.Assertions;
 
 public class Question : MonoBehaviour {
 
@@ -13,7 +12,8 @@ public class Question : MonoBehaviour {
     public GameObject TileTwo;
     public GameObject CheckmarkTile;
     public GameObject CrossTile;
-    public Slider experienceSlider;
+
+    private Slider experienceSlider;
 
     private string letterOne;
     private string letterTwo;
@@ -40,16 +40,12 @@ public class Question : MonoBehaviour {
     private void Awake()
     {
         sourceManager = GameObject.Find("SourceManager");
-        if (sourceManager == null)
-        {
-            Debug.LogError("Careful! No SourceManager!");
-        }
-        
         nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
         if (nextSceneIndex >= SceneManager.sceneCountInBuildSettings)
         {
             nextSceneIndex = 0;
         }
+        experienceSlider = GameObject.Find("Experience_Slider").GetComponent<Slider>();
 
         posList = new List<string>();
         negList = new List<string>();
@@ -124,6 +120,8 @@ public class Question : MonoBehaviour {
                 {
                     case true:
                         experienceSlider.GetComponent<Slider>().value += 10;
+                        GameControl.control.experience = experienceSlider.value;
+                        Debug.Log(GameControl.control.experience);
                         switch (randomSyllable)
                         {
                             case 0:
@@ -139,6 +137,8 @@ public class Question : MonoBehaviour {
                         break;
                     case false:
                         experienceSlider.GetComponent<Slider>().value -= 10;
+                        GameControl.control.experience = experienceSlider.value;
+                        Debug.Log(GameControl.control.experience);
                         setTilesNow = true;
                         break;
                 }
@@ -245,7 +245,8 @@ public class Question : MonoBehaviour {
         }
         else
         {
-            Debug.Log("ALL ANSWERS DONE!");
+            Debug.Log("Saving: "+ GameControl.control.experience);
+            GameControl.control.Save();
             sourceManager.GetComponent<SourceManager>().ChangeToScene(nextSceneIndex);
         }
     }
@@ -313,7 +314,7 @@ public class Question : MonoBehaviour {
     }
 
     /// <summary>
-    /// Returns the clicked gameobject or null, if teh recieved touch did not touch
+    /// Returns the clicked gameobject or null, if the recieved touch did not touch
     /// any desired gameobject.
     /// </summary>
     /// <returns></returns> gameobject with tag "Tile" or "RightWrong"

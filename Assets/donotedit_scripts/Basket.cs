@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Basket : MonoBehaviour {
 
@@ -35,7 +33,6 @@ public class Basket : MonoBehaviour {
             {
                 if (thisObject.GetComponent<AudioSource>() != null)
                 {
-                    Debug.Log("Wie oft werd ich gespielt?");
                     thisObject.GetComponent<AudioSource>().Play();
                 }
             }
@@ -49,27 +46,24 @@ public class Basket : MonoBehaviour {
         {
             if (coll.GetComponent<Dragable>().letter == this.GetComponent<Basket>().letter)
             {
-                Debug.Log("yes, ended! right");
                 coll.GetComponent<Dragable>().dragable = false;
                 truefalseAnswer = true;
                 nrrightTiles += 1;
             }
             else if (coll.GetComponent<Dragable>().letter != this.GetComponent<Basket>().letter)
             {
-                Debug.Log("yes, ended! wrong");
                 coll.GetComponent<Dragable>().dragable = false;
                 truefalseAnswer = false;
                 nrwrongTiles += 1;
             }
         }
     }
-
+    
     private void OnTriggerExit(Collider other)
     {
         GameObject coll = other.gameObject;
         if (coll.GetComponent<Dragable>().dragable == false)
         {
-            Debug.Log("Exited! ");
             coll.GetComponent<Dragable>().dragable = true;
             if (truefalseAnswer == true)
             {
@@ -91,6 +85,11 @@ public class Basket : MonoBehaviour {
         return nrwrongTiles;
     }
 
+    /// <summary>
+    /// Returns the clicked gameobject or null, if the recieved touch did not touch
+    /// any desired gameobject.
+    /// </summary>
+    /// <returns></returns> gameobject with tag "Tile" or "RightWrong"
     GameObject GetClickedGameObject()
     {
         //Builds a ray from camera point of view to the mouse position 

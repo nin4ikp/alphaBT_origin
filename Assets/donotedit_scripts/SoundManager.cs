@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class SoundManager : MonoBehaviour {
@@ -14,6 +12,10 @@ public class SoundManager : MonoBehaviour {
 
     public static SoundManager instance = null;
 
+    /// <summary>
+    /// Makes a Singleton of this class. This way the backgorundmusic
+    /// does start with every level from teh beginning.
+    /// </summary>
     void Awake()
     {
         if (instance == null)
@@ -24,12 +26,20 @@ public class SoundManager : MonoBehaviour {
         DontDestroyOnLoad(gameObject);
     }
 
+    /// <summary>
+    /// Plays a single clip. Used for right/wrong sounds.
+    /// </summary>
+    /// <param name="clip"></param> the clip
     public void PlaySingle (AudioClip clip)
     {
         singleSoundSource.clip = clip;
         singleSoundSource.Play();
     }
 
+    /// <summary>
+    /// Sounds more natural, if the pitchrange is randomnized. Used for backgroundmusic.
+    /// </summary>
+    /// <param name="clips"></param>
     public void RandomizeSfx(params AudioClip[] clips)
     {
         int randomIndex = Random.Range(0, clips.Length);
