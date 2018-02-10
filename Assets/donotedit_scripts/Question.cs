@@ -12,6 +12,7 @@ public class Question : MonoBehaviour {
     public GameObject TileTwo;
     public GameObject CheckmarkTile;
     public GameObject CrossTile;
+    private ParticleSystem particle;
 
     private Slider experienceSlider;
 
@@ -37,8 +38,11 @@ public class Question : MonoBehaviour {
     private GameObject sourceManager;
     private int nextSceneIndex;
     
+
     private void Awake()
     {
+        particle = GameObject.Find("Particles").GetComponent<ParticleSystem>();
+        //particle.emission.SetBursts(new ParticleSystem.Burst[]{new ParticleSystem.Burst(1f, 10)});
         sourceManager = GameObject.Find("SourceManager");
         nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
         if (nextSceneIndex >= SceneManager.sceneCountInBuildSettings)
@@ -119,6 +123,7 @@ public class Question : MonoBehaviour {
                 switch (answer)
                 {
                     case true:
+                        particle.Emit(50);
                         experienceSlider.GetComponent<Slider>().value += 10;
                         GameControl.control.updateAttributes();
                         switch (randomSyllable)

@@ -5,6 +5,8 @@ using UnityEngine.UI;
 public class ReadAndDragFiles : MonoBehaviour {
 
     public GameObject tile;
+
+    private ParticleSystem particle;
     private Slider experienceSlider;
     private GameControl control;
     private GameObject sourceManager;
@@ -45,6 +47,7 @@ public class ReadAndDragFiles : MonoBehaviour {
 
         experienceSlider = GameObject.Find("Experience_Slider").GetComponent<Slider>();
         control = GameObject.Find("GameControl").GetComponent<GameControl>();
+        particle = GameObject.Find("Particles").GetComponent<ParticleSystem>(); 
 
         letterOne = sourceManager.GetComponent<SourceManager>().GetLetterOne();
         letterTwo = sourceManager.GetComponent<SourceManager>().GetLetterTwo();
@@ -99,6 +102,7 @@ public class ReadAndDragFiles : MonoBehaviour {
             {
                 score = bask1.GetComponent<Basket>().getNumberofRight() + bask2.GetComponent<Basket>().getNumberofRight();
 
+                particle.Emit(50);
                 experienceSlider.GetComponent<Slider>().value += 30;    // experienceSlider.GetComponent<Slider>().value
                 GameControl.control.updateAttributes();
                 //Debug.Log("DONE: "+ score + "of" + totalScore + ": " + (float)score / (float)totalScore);

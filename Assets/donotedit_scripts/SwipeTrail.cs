@@ -8,6 +8,7 @@ public class SwipeTrail : MonoBehaviour {
 
     public GameObject trailPrefab;
     public GameObject drawBase;
+    private ParticleSystem particle;
 
     private GameObject soundManager;
     private GameObject sourceManager;
@@ -67,6 +68,7 @@ public class SwipeTrail : MonoBehaviour {
     void Start()
     {
         sourceManager = GameObject.Find("SourceManager");
+        particle = GameObject.Find("Particles").GetComponent<ParticleSystem>();
 
         nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
         if (nextSceneIndex >= SceneManager.sceneCountInBuildSettings)
@@ -269,10 +271,11 @@ public class SwipeTrail : MonoBehaviour {
         else
             greenval.Add(-1);
 
-        if (gcolor.g >230)
+        if (gcolor.g >230 && setLetterNow == false)
         {
             if (CheckGColor())
             {
+                particle.Emit(50);
                 StartCoroutine(PlaySound());
                 goodanswers += 1;
                 if (goodanswers >= loadSceneAfterNumberofGood)
