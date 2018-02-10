@@ -44,6 +44,8 @@ public class GameControl : MonoBehaviour {
     {
         GameObject.Find("Experience_Slider").GetComponent<Slider>().value = experience;
         GameObject.Find("Knowledge").GetComponent<Text>().text = knowledge.ToString();
+        Debug.Log(GameObject.Find("Experience_Slider").GetComponent<Slider>().value);
+        Debug.Log(GameObject.Find("Knowledge").GetComponent<Text>().text);
     }
 
 
@@ -80,6 +82,21 @@ public class GameControl : MonoBehaviour {
 
             loadAttributesIntoGameObjects();
         }
+    }
+
+    public void DeletePlayerData()
+    {
+        BinaryFormatter bf = new BinaryFormatter();
+        FileStream file = File.Create(Application.persistentDataPath + "/playerInfo.dat");
+
+        PlayerData data = new PlayerData();
+        data.experience = 0;
+        data.knowledge = 0;
+
+        bf.Serialize(file, data);
+        file.Close();
+
+        Load();
     }
 }
 
