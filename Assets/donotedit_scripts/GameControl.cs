@@ -26,15 +26,24 @@ public class GameControl : MonoBehaviour {
         }
         else if (control != this)
         {
+
             Debug.Log("Already existing GameCOntrol. Destroy old");
             Destroy(gameObject);
         }
 	}
 
-    void updateAttributes()
+    public void updateAttributes()
     {
+        Debug.Log("Experience, Knowledge before: " + experience + ", " + knowledge);
         experience = GameObject.Find("Experience_Slider").GetComponent<Slider>().value;
-        knowledge = GameObject.Find("Knowledge").GetComponent<Text>().text;
+        knowledge = float.Parse(GameObject.Find("Knowledge").GetComponent<Text>().text);
+        Debug.Log("Experience, Knowledge after: " + experience + ", " + knowledge);
+    }
+
+    private void loadAttributesIntoGameObjects()
+    {
+        GameObject.Find("Experience_Slider").GetComponent<Slider>().value = experience;
+        GameObject.Find("Knowledge").GetComponent<Text>().text = knowledge.ToString();
     }
 
 
@@ -68,7 +77,9 @@ public class GameControl : MonoBehaviour {
 
             experience = data.experience;
             knowledge = data.knowledge;
-}
+
+            loadAttributesIntoGameObjects();
+        }
     }
 }
 

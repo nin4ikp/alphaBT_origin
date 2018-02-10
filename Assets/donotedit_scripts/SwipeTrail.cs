@@ -37,7 +37,7 @@ public class SwipeTrail : MonoBehaviour {
 
     /** update the drawing */
     private float nexttime = 0;
-    private float repeatingrate = 0.3f;
+    private float repeatingrate = 0.5f;
 
     /** check for input for a certain timeamount */
     private float nexttimeout = 0;
@@ -240,6 +240,7 @@ public class SwipeTrail : MonoBehaviour {
         {
             if (setNextlevelNow)
             {
+                GameControl.control.updateAttributes();
                 GameControl.control.Save();
                 sourceManager.GetComponent<SourceManager>().ChangeToScene(nextSceneIndex);
             }
@@ -298,7 +299,7 @@ public class SwipeTrail : MonoBehaviour {
     {
         if (greenval[0] != 0) {
             experienceSlider.GetComponent<Slider>().value -= 10;    // experienceSlider.GetComponent<Slider>().value
-            GameControl.control.experience = experienceSlider.value;
+            GameControl.control.updateAttributes();
             return false;
         }
         for (int i = 0; i < greenval.Count-1; i++)
@@ -306,12 +307,12 @@ public class SwipeTrail : MonoBehaviour {
             if (greenval[i] > greenval[i + 1])
             {
                 experienceSlider.GetComponent<Slider>().value -= 10;    // experienceSlider.GetComponent<Slider>().value
-                GameControl.control.experience = experienceSlider.value;
+                GameControl.control.updateAttributes();
                 return false;
             }
         }
         experienceSlider.GetComponent<Slider>().value += 20;    // experienceSlider.GetComponent<Slider>().value
-        GameControl.control.experience = experienceSlider.value;
+        GameControl.control.updateAttributes();
         return true;
     }
 

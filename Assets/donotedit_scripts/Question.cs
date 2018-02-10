@@ -120,8 +120,7 @@ public class Question : MonoBehaviour {
                 {
                     case true:
                         experienceSlider.GetComponent<Slider>().value += 10;
-                        GameControl.control.experience = experienceSlider.value;
-                        Debug.Log(GameControl.control.experience);
+                        GameControl.control.updateAttributes();
                         switch (randomSyllable)
                         {
                             case 0:
@@ -137,8 +136,7 @@ public class Question : MonoBehaviour {
                         break;
                     case false:
                         experienceSlider.GetComponent<Slider>().value -= 10;
-                        GameControl.control.experience = experienceSlider.value;
-                        Debug.Log(GameControl.control.experience);
+                        GameControl.control.updateAttributes();
                         setTilesNow = true;
                         break;
                 }
@@ -245,7 +243,7 @@ public class Question : MonoBehaviour {
         }
         else
         {
-            Debug.Log("Saving: "+ GameControl.control.experience);
+            GameControl.control.updateAttributes();
             GameControl.control.Save();
             sourceManager.GetComponent<SourceManager>().ChangeToScene(nextSceneIndex);
         }
@@ -263,9 +261,9 @@ public class Question : MonoBehaviour {
     /// The function sets the audioclip and the color/image
     /// of the object, depending if it is a syllable or words scene
     /// </summary>
-    /// <param name="obj"></param>
-    /// <param name="letter"></param>
-    /// <param name="realLetter"></param>
+    /// <param name="obj"></param> Gameobject for which the color or sprite has to be set.
+    /// <param name="letter"></param> syllable or letter or word
+    /// <param name="realLetter"></param> letter
     void SetGameObjAudioAndColor(GameObject obj, string letter, string realLetter)
     {
         switch (syllable)

@@ -99,11 +99,12 @@ public class ReadAndDragFiles : MonoBehaviour {
             {
                 score = bask1.GetComponent<Basket>().getNumberofRight() + bask2.GetComponent<Basket>().getNumberofRight();
 
-                experienceSlider.GetComponent<Slider>().value += 20;    // experienceSlider.GetComponent<Slider>().value
-                GameControl.control.experience = experienceSlider.value;
-                Debug.Log("DONE: "+ score + "of" + totalScore + ": " + (float)score / (float)totalScore);
+                experienceSlider.GetComponent<Slider>().value += 30;    // experienceSlider.GetComponent<Slider>().value
+                GameControl.control.updateAttributes();
+                //Debug.Log("DONE: "+ score + "of" + totalScore + ": " + (float)score / (float)totalScore);
                 GameControl.control.Save();
-                SceneManager.LoadScene(nextSceneIndex);
+                //SceneManager.LoadScene(nextSceneIndex);
+                sourceManager.GetComponent<SourceManager>().ChangeToScene(nextSceneIndex);
             }
         }
         //Transform equally to the mouse position
