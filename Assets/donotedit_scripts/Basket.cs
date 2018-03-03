@@ -15,11 +15,17 @@ public class Basket : MonoBehaviour {
     private LayerMask lmask = 1 << 9;// Basket
     private GameObject thisObject;
 
+    /// <summary>
+    /// Initializes a Plaen for detecting rays.
+    /// </summary>
     private void Start()
     {
         objPlane = new Plane(Camera.main.transform.forward * -1, this.transform.position);
     }
     
+    /// <summary>
+    /// Update function. Checks, if Touchinput was received. If yes, the hit object plays it's sound.
+    /// </summary>
     private void Update()
     {
         if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || (Input.GetMouseButtonDown(0)))
@@ -39,6 +45,11 @@ public class Basket : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// If a dragable objects enters the basket and is released inside, it becomes not dragable anymore.
+    /// If it is not released inside, the object stays dragable.
+    /// </summary>
+    /// <param name="other"></param> The collider of the other gameobject, which hits the basket.
     void OnTriggerEnter(Collider other)
     {
         GameObject coll = other.gameObject;
@@ -58,7 +69,11 @@ public class Basket : MonoBehaviour {
             }
         }
     }
-    
+
+    /// <summary>
+    /// See OnTriggerEnter(). Functions work together.
+    /// </summary>
+    /// <param name="other"></param> The collider of the other gameobject, which hits the basket.
     private void OnTriggerExit(Collider other)
     {
         GameObject coll = other.gameObject;
@@ -76,10 +91,18 @@ public class Basket : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Number of the images, which were sorted in the right basket.
+    /// </summary>
+    /// <returns></returns> Number of the right images.
     public int getNumberofRight()
     {
         return nrrightTiles;
     }
+    /// <summary>
+    /// Number of the images, which were sorted in the wrong basket.
+    /// </summary>
+    /// <returns></returns> Number of the wrong images.
     public int getNumberofWrong()
     {
         return nrwrongTiles;

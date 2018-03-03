@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Assertions;
 
 public class SwipeTrail : MonoBehaviour {
 
@@ -124,11 +125,7 @@ public class SwipeTrail : MonoBehaviour {
 
         //init sprites for direction calculation
         go_green = GameObject.Find("Draw_green");
-        if (go_green == null)
-            Debug.LogError("Careful! No Draw_green Object");
         go_black = GameObject.Find("Draw_black");
-        if (go_black == null)
-            Debug.LogError("Careful! No Draw_black Object");
 
         InitImage(go_green, letter, "green", true);    // set the Audioclip only on the green image
         InitImage(go_black, letter, "black", false);
@@ -155,18 +152,14 @@ public class SwipeTrail : MonoBehaviour {
     /// values are right, the letter will be spoken out loud.
     void InitImage(GameObject obj, string letter, string greenorblack, bool setAudio)
     {
-        if (obj != null)
+        Assert.AreNotEqual(obj, null);
+
+        obj.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(fileDir + letter + greenorblack);
+        if (setAudio)
         {
-            //sourceManager.GetComponent<SourceManager>().SetLetter(letter);
-            obj.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(fileDir + letter + greenorblack);
-            if (setAudio)
-            {
-                obj.GetComponent<AudioSource>().clip = Resources.Load<AudioClip>(fileDir + letter);
-                letterSound = obj.GetComponent<AudioSource>();
-            }
+            obj.GetComponent<AudioSource>().clip = Resources.Load<AudioClip>(fileDir + letter);
+            letterSound = obj.GetComponent<AudioSource>();
         }
-        else
-            Debug.LogError(obj.name + "letter not available");
     }
 
     /// <summary>
@@ -178,12 +171,11 @@ public class SwipeTrail : MonoBehaviour {
         {
             soundManager.GetComponent<SoundManager>().singleSoundSource.Play();
             Reset();
-            Debug.Log("TRY AGAAAAIN!!!");
+            //Debug.Log("TRY AGAAAAIN!!!");
         }
         // if touched, start to draw
         if (setLetterNow == false && ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || (Input.GetMouseButtonDown(0))))
         {
-            thisTrail = (GameObject)Instantiate(trailPrefab, this.transform.position, Quaternion.identity);
             Ray mRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 
             float rayDistance;
@@ -191,6 +183,7 @@ public class SwipeTrail : MonoBehaviour {
             {
                 startPos = mRay.GetPoint(rayDistance);
             }
+            thisTrail = (GameObject)Instantiate(trailPrefab, startPos, Quaternion.identity);
             if (startPos.x < bminx || startPos.x > bmaxx || startPos.y < bminy || startPos.y > bmaxy)
             {
                 if (thisTrail != null)
@@ -290,7 +283,7 @@ public class SwipeTrail : MonoBehaviour {
                 setLetterNow = true;
                 if (goodanswers > 0)
                     goodanswers -= 1;
-                Debug.Log("TRY AGAAAAIN!!!");
+                //Debug.Log("TRY AGAAAAIN!!!");
             }
         }
     }
@@ -330,6 +323,10 @@ public class SwipeTrail : MonoBehaviour {
         InitLetterBase();
     }
 
+    /// <summary>
+    /// Plays the sound of the current letter.
+    /// </summary>
+    /// <returns></returns> Waits until the sound is played.
     IEnumerator PlaySound()
     {
         letterSound.Play();

@@ -19,33 +19,32 @@ public class GameControl : MonoBehaviour {
 	void Awake () {
 		if (control == null)
         {
-            Debug.Log("Control was null.. Setting new");
             DontDestroyOnLoad(gameObject);
             control = this;
             control.Load();
         }
         else if (control != this)
         {
-
-            Debug.Log("Already existing GameCOntrol. Destroy old");
             Destroy(gameObject);
         }
 	}
 
+    /// <summary>
+    /// updates experience and knowlegde from the GUI.
+    /// </summary>
     public void updateAttributes()
     {
-        Debug.Log("Experience, Knowledge before: " + experience + ", " + knowledge);
         experience = GameObject.Find("Experience_Slider").GetComponent<Slider>().value;
         knowledge = float.Parse(GameObject.Find("Knowledge").GetComponent<Text>().text);
-        Debug.Log("Experience, Knowledge after: " + experience + ", " + knowledge);
     }
 
+    /// <summary>
+    /// Sets experience and knowledge in the GUI.
+    /// </summary>
     private void loadAttributesIntoGameObjects()
     {
         GameObject.Find("Experience_Slider").GetComponent<Slider>().value = experience;
         GameObject.Find("Knowledge").GetComponent<Text>().text = knowledge.ToString();
-        Debug.Log(GameObject.Find("Experience_Slider").GetComponent<Slider>().value);
-        Debug.Log(GameObject.Find("Knowledge").GetComponent<Text>().text);
     }
 
 
@@ -84,6 +83,9 @@ public class GameControl : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Deletes the player data from file. Resets all experience and knowledge to zero.
+    /// </summary>
     public void DeletePlayerData()
     {
         BinaryFormatter bf = new BinaryFormatter();

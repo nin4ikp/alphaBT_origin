@@ -35,6 +35,12 @@ public class ReadAndDragFiles : MonoBehaviour {
     private int totalScore;
     private LayerMask lmask = 1 << 8;// Tiles
     
+    /// <summary>
+    /// Sets all Manager, GameControl and Particles.
+    /// Gets the letters and words from the sourceManager.
+    /// Initializes the tiles, which will be sorted.
+    /// Initializes the baskets.
+    /// </summary>
     void Start() {
         sourceManager = GameObject.Find("SourceManager");
         files_dir = sourceManager.GetComponent<SourceManager>().GetFileDirectory();
@@ -72,7 +78,10 @@ public class ReadAndDragFiles : MonoBehaviour {
         bask2.GetComponent<Basket>().letter = letterTwo;
         bask2.GetComponent<AudioSource>().clip = Resources.Load<AudioClip>(files_dir + letterTwo + ".wav");
     } 
-
+    /// <summary>
+    /// Handles the touchinput. Drags an object, if it is dragable.
+    /// When the last tile was sorted into the basket, the score is calculated and added to the experience.
+    /// </summary>
     void Update()
     {
         // when a tile is touched/clicked on it shall play the corresponding sound and 
@@ -103,7 +112,7 @@ public class ReadAndDragFiles : MonoBehaviour {
                 score = bask1.GetComponent<Basket>().getNumberofRight() + bask2.GetComponent<Basket>().getNumberofRight();
 
                 particle.Emit(50);
-                experienceSlider.GetComponent<Slider>().value += 30;    // experienceSlider.GetComponent<Slider>().value
+                experienceSlider.GetComponent<Slider>().value += (score*10);    // experienceSlider.GetComponent<Slider>().value
                 GameControl.control.updateAttributes();
                 //Debug.Log("DONE: "+ score + "of" + totalScore + ": " + (float)score / (float)totalScore);
                 GameControl.control.Save();
@@ -126,6 +135,12 @@ public class ReadAndDragFiles : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Initializes the tiles with sprites, audioclips and the letter, which is in the word.
+    /// </summary>
+    /// <param name="myletter"></param> letter, which is found in the words
+    /// <param name="text"></param> Words with the letter, found by SourceManager
+    /// <returns></returns>
     GameObject[] InitTiles(string myletter, string[] text)
     {
         //sourceManager.GetComponent<SourceManager>().SetLetter(myletter);

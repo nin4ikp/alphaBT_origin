@@ -38,7 +38,9 @@ public class Question : MonoBehaviour {
     private GameObject sourceManager;
     private int nextSceneIndex;
     
-
+    /// <summary>
+    /// Sets all Managers, ExperienceSlider, Particles and nextsceneIndex.
+    /// </summary>
     private void Awake()
     {
         particle = GameObject.Find("Particles").GetComponent<ParticleSystem>();
@@ -55,15 +57,11 @@ public class Question : MonoBehaviour {
         negList = new List<string>();
     }
 
-    IEnumerator LoadSoundFromFile(string filename)
-    {
-        WWW www = new WWW("jar:file://" + Application.persistentDataPath + "!/assets/"+ filename +".wav");
-        while (!www.isDone)
-            yield return null;
-        rightAnswerClip = www.GetAudioClip();
-        yield return new WaitForSeconds(5);
-    }
-    
+    /// <summary>
+    /// Gets the letters, directories and audioclips for wrong and right sounds from the sourcemanager.
+    /// Initializes the letter-lists with either syllables or words.
+    /// Sets the sprites in case of words to the tiles and a random color in case of a syllable.
+    /// </summary>
     private void Start()
     {
         letterOne = sourceManager.GetComponent<SourceManager>().GetLetterOne();
@@ -73,8 +71,8 @@ public class Question : MonoBehaviour {
         rightAnswerClip = Resources.Load<AudioClip>(sourceManager.GetComponent<SourceManager>().GetRightSoundDir());
         wrongAnswerClip = Resources.Load<AudioClip>(sourceManager.GetComponent<SourceManager>().GetWrongSoundDir());
 
-        InitList(letterOne, true);    // sets the posList
-        InitList(letterTwo, false);   // sets the negList
+        InitList(letterOne, true);
+        InitList(letterTwo, false);
 
         randomLetter = 0;
         randomSyllable = 0;
@@ -112,57 +110,59 @@ public class Question : MonoBehaviour {
     {
         thisObject = GetClickedGameObject();
         //Assert.IsNotNull(thisObject);
-        if (thisObject != null)
+        if (thisObject == null)
+            return;
+        // if this is a RightWrong Tile, play its sound and check if answer is correct
+        if (thisObject.tag == "RightWrong" && setTilesNow == false)
         {
-            // if this is a RightWrong Tile, play its sound and check if answer is correct
-            if (thisObject.tag == "RightWrong" && setTilesNow == false)
+            aud = thisObject.gameObject.GetComponent<AudioSource>();
+            StartCoroutine(PlaySound(aud));
+            bool answer = thisObject.GetComponent<Rightorwrong>().rightorwrong;
+            switch (answer)
             {
-                aud = thisObject.gameObject.GetComponent<AudioSource>();
-                StartCoroutine(PlaySound(aud));
-                bool answer = thisObject.GetComponent<Rightorwrong>().rightorwrong;
-                switch (answer)
-                {
-                    case true:
-                        particle.Emit(50);
-                        experienceSlider.GetComponent<Slider>().value += 10;
-                        GameControl.control.updateAttributes();
-                        switch (randomSyllable)
-                        {
-                            case 0:
-                                rightList.Add(posList[listIndex]);
-                                posList.Remove(posList[listIndex]);
-                                break;
-                            case 1:
-                                rightList.Add(negList[listIndex]);
-                                negList.Remove(negList[listIndex]);
-                                break;
-                        }
-                        setTilesNow = true;
-                        break;
-                    case false:
-                        experienceSlider.GetComponent<Slider>().value -= 10;
-                        GameControl.control.updateAttributes();
-                        setTilesNow = true;
-                        break;
-                }
+                case true:
+                    particle.Emit(50);
+                    experienceSlider.GetComponent<Slider>().value += 10;
+                    GameControl.control.updateAttributes();
+                    switch (randomSyllable)
+                    {
+                        case 0:
+                            rightList.Add(posList[listIndex]);
+                            posList.Remove(posList[listIndex]);
+                            break;
+                        case 1:
+                            rightList.Add(negList[listIndex]);
+                            negList.Remove(negList[listIndex]);
+                            break;
+                    }
+                    setTilesNow = true;
+                    break;
+                case false:
+                    experienceSlider.GetComponent<Slider>().value -= 10;
+                    GameControl.control.updateAttributes();
+                    setTilesNow = true;
+                    break;
             }
-            // otherwise only play the audio of the tile
-            else
-            {
-                thisObject.gameObject.GetComponent<AudioSource>().Play();
-            }
+        }
+        // otherwise only play the audio of the tile
+        else
+        {
+            thisObject.gameObject.GetComponent<AudioSource>().Play();
         }
     }
 
+    /// <summary>
+    /// Fixed update. Checks if tiles have to be set anew.
+    /// If yes, it waits until the sound of the previous task is played.
+    /// </summary>
     private void FixedUpdate()
     {
-        if (setTilesNow)
+        if (!setTilesNow)
+            return;
+        if (!aud.isPlaying)
         {
-            if (!aud.isPlaying)
-            {
-                SetTilesAnew();
-                setTilesNow = false;
-            }
+            SetTilesAnew();
+            setTilesNow = false;
         }
     }
     /// <summary> 
@@ -186,7 +186,7 @@ public class Question : MonoBehaviour {
         if(syllable == true)
         {
             string[] newObj = new string[6];
-            for (int i = 0; i < GetVocals().Length; i++)
+            for (int i = 0; i < vocals.Length; i++)
             {
                 myletter = myletter.ToLower();
                 newObj[i] = myletter + vocals[i];
@@ -217,11 +217,11 @@ public class Question : MonoBehaviour {
         }
     }
 
-    private string[] GetVocals()
-    {
-        return vocals;
-    }
-
+    /// <summary>
+    /// picks a random letter and a random syllable or word.
+    /// assigns the right/wrong sounds to the answer-tiles depending on whether the word or syllable contains the letter.
+    /// If both lists are empty, the level is finished. The sourceManager goes to the next scene.
+    /// </summary>
     void SetTilesAnew()
     {
         randomLetter = Random.Range(0, 2); // choose M (<0.5) or N
@@ -254,11 +254,18 @@ public class Question : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Assigns the correct sounds to the Answer-Tiles.
+    /// </summary>
+    /// <param name="truetile"></param>
+    /// <param name="falsetile"></param>
+    /// <param name="list"></param>
+    /// <param name="letter"></param>
     void SettingTilesAndAnswers( bool truetile, bool falsetile, List<string> list, string letter)
     {
         SetAnswers(CheckmarkTile, truetile);
         SetAnswers(CrossTile, falsetile);
-        listIndex = UnityEngine.Random.Range(0, list.Count);
+        listIndex = Random.Range(0, list.Count);
         SetGameObjAudioAndColor(TileTwo, list[listIndex], letter);
     }
 
@@ -288,8 +295,13 @@ public class Question : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Sets the audioclip and color/sprite of the object
+    /// </summary>
+    /// <param name="obj"></param> object
+    /// <param name="letter"></param> letter
+    /// <param name="color"></param> shall the color (for syllables) be set or the sprite (for words)
     void SetAudioClipInTile(GameObject obj, string letter, bool color) {
-        /** The function sets the audioclip and color/sprite of the object */
         obj.gameObject.GetComponent<AudioSource>().clip = Resources.Load<AudioClip>(fileDir + letter);
         if (color)
         {
@@ -303,6 +315,11 @@ public class Question : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Sets the audioclips for the answer-tiles.
+    /// </summary>
+    /// <param name="obj"></param> Tile-object
+    /// <param name="trueorfalse"></param> true-sound or false-sound
     void SetAnswers(GameObject obj, bool trueorfalse)
     {
         obj.gameObject.GetComponent<Rightorwrong>().rightorwrong = trueorfalse;
